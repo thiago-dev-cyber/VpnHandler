@@ -51,7 +51,7 @@ class FileHelp:
         except PermissionError:
 
             print(
-                f"Não foi possivel escrever no arquivo {file_dir}/{file_name}"
+                f"Não foi possivel ler o arquivo {file_dir}/{file_name}"
                 "\nVerifique se você possui permissão e tente novamente."
                 )
 
@@ -70,14 +70,56 @@ class FileHelp:
 
     @staticmethod
     def read_txt(file_dir: str, file_name) -> str:
+        """Le dados de um arquivo .txt"""
+        if not os.path.exists(file_dir):
+            print(f"Não foi possivel encontrar o diretorio informado {file_dir}")
+
         full_file_path = os.path.join(file_dir, file_name)
-        with open(full_file_path) as file:
-            return file.read()
+
+        try:
+            # TODO: Ainda que eu tenha conhecimento de que é um arquivo pequeno, seria interessante ler em lote
+            # para evitar estouro de memoria.
+            with open(full_file_path, 'r') as file:
+                return file.read()
+
+        except PermissionError:
+
+            print(
+                f"Não foi possivel ler o arquivo {file_dir}/{file_name}"
+                "\nVerifique se você possui permissão e tente novamente."
+                )
+
+        except OSError as err:
+            print(f"Erro de sistema: {err}")
+
 
     
     @staticmethod
-    def write_txt(file_dir: str, file_name, data) -> bool:
-        pass
+    def write_txt(file_dir: str, file_name: str, data: str) -> bool:
+        """Escreve dados em um arquivo .txt"""
+        if not os.path.exists(file_dir):
+            print(f"Não foi possivel encontrar o diretorio informado {file_dir}")
+
+        full_file_path = os.path.join(file_dir, file_name)
+
+        try:
+            # TODO: Ainda que eu tenha conhecimento de que é um arquivo pequeno, seria interessante ler em lote
+            # para evitar estouro de memoria.
+            with open(full_file_path, 'w') as file:
+                file.write(data)
+
+            return True
+
+        except PermissionError:
+
+            print(
+                f"Não foi possivel escrever no arquivo {file_dir}/{file_name}"
+                "\nVerifique se você possui permissão e tente novamente."
+                )
+
+        except OSError as err:
+            print(f"Erro de sistema: {err}")
+
 
     @staticmethod
     def is_lock(file_path: str) -> bool:
