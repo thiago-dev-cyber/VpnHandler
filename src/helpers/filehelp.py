@@ -33,6 +33,7 @@ class FileHelp:
 
             return False
     
+    
     @staticmethod
     def read_json(file_dir: str, file_name) -> dict:
         """Le dados de um arquivo que esteja no formato JSON"""
