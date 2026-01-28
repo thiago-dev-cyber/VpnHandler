@@ -1,4 +1,5 @@
 import time
+import os
 from pathlib import Path
 from random import choice
 
@@ -6,7 +7,7 @@ import requests
 
 from . import VpnProvider
 from src.helpers import FileHelp
-
+from src.helpers import WireguardHelp
 
 class MullvadProvider(VpnProvider):
 	"""
@@ -24,6 +25,7 @@ class MullvadProvider(VpnProvider):
 	"""
 	API_URL = "https://api.mullvad.net/www/relays/wireguard/"
 	CACHE_FILE_NAME = "mullvad_servers.json"
+	CONFIG_FILE_NAME = "mullvad.conf"
 
 	def __init__(self, cache_dir: str = "./cache"):		
 		self.cache_dir = Path(cache_dir)
@@ -188,8 +190,9 @@ class MullvadProvider(VpnProvider):
 			country = choice(list(self._servers.keys()))
 			server = choice(self._servers[country])
 
+			
 			# TODO: Pegar o caminho de forma dinamica
-			raw_conf = FileHelp.read_txt("/src/providers/utils", "template_wireguard.conf")
+			raw_conf = FileHelp.read_txt("", "template_wireguard.conf")
 
 			raw_conf = raw_conf.replace("ENDPOINT", server["ipv4_addr_in"])
 			raw_conf = raw_conf.replace("PORT", "51820")
@@ -197,5 +200,8 @@ class MullvadProvider(VpnProvider):
 			raw_conf = raw_conf.replace("PUBLICKEYSERVER", server["pubkey"])
 			raw_conf = raw_conf.replace("PRIVATE_KEY", "VOCE ACHOU MESMO QUE EU IA DEIXAR ELA DANDO SOPA AQUI ?")
 
-		
+
 			# TODO: Escrever essa config em /etc/wireguard/mullvad.conf
+			FileHelp.write_txt(WireguardHelp.CONFIG_PATH, self.CONFIG_FILE_NAME, raw_conf)
+
+				
