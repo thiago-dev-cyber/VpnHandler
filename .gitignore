@@ -7,6 +7,9 @@ __pycache__/
 *.so
 
 # Arquivos de cache
+config.json
+
+*config.json
 
 .cache/
 cache/
