@@ -1,5 +1,6 @@
 import time
 from pathlib import Path
+from random import choice
 
 import requests
 
@@ -30,7 +31,7 @@ class MullvadProvider(VpnProvider):
 
 		self._servers = None
 		self._cache_ttl: float = 0.0
-
+		self._current_server = {}
 
 	# Tempo de vida do cache 1h (3600 segundos)
 	def cache_is_valid(self, ttl: int = 3600) -> bool:
@@ -177,3 +178,24 @@ class MullvadProvider(VpnProvider):
 		self.update_and_save_cache(eyes_type)
 
 		return self._servers
+
+
+	def make_config_file(self, country_code: str = "", random_country: bool = True):
+		if not self._servers or not self.cache_is_valid():
+			self.update_and_save_cache()
+
+		if not country_code and random_country:
+			country = choice(list(self._servers.keys()))
+			server = choice(self._servers[country])
+
+			# TODO: Pegar o caminho de forma dinamica
+			raw_conf = FileHelp.read_txt("/src/providers/utils", "template_wireguard.conf")
+
+			raw_conf = raw_conf.replace("ENDPOINT", server["ipv4_addr_in"])
+			raw_conf = raw_conf.replace("PORT", "51820")
+			raw_conf = raw_conf.replace("ALLOWEDIPS", "0.0.0.0/0")
+			raw_conf = raw_conf.replace("PUBLICKEYSERVER", server["pubkey"])
+			raw_conf = raw_conf.replace("PRIVATE_KEY", "VOCE ACHOU MESMO QUE EU IA DEIXAR ELA DANDO SOPA AQUI ?")
+
+		
+			# TODO: Escrever essa config em /etc/wireguard/mullvad.conf

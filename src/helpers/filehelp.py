@@ -33,7 +33,7 @@ class FileHelp:
 
             return False
     
-    
+
     @staticmethod
     def read_json(file_dir: str, file_name) -> dict:
         """Le dados de um arquivo que esteja no formato JSON"""
@@ -70,7 +70,9 @@ class FileHelp:
 
     @staticmethod
     def read_txt(file_dir: str, file_name) -> str:
-        pass
+        full_file_path = os.path.join(file_dir, file_name)
+        with open(full_file_path) as file:
+            return file.read()
 
     
     @staticmethod
