@@ -55,17 +55,17 @@ class MullvadProvider:
 	    return actives
 
 
-	def _agroup_servers_by_country_code(self, raw_servers: list):
+	def _agroup_servers_by_country_code(self, raw_servers: list) -> dict:
 		servers = {}
 
 		for server in raw_servers:
-			country = server["country_code"]
+			country = server["country_code"].upper()
 
-			if country.upper() in servers.keys():
+			if country in servers.keys():
 				servers[country].append(server)
 
 			else:
-				servers[country.upper()] = [server]
+				servers[country] = [server]
 
 		return servers
 
@@ -84,3 +84,15 @@ class MullvadProvider:
 
 
 		return clean_servers
+
+
+
+	def get_servers(self) -> dict:
+		# Limpando e Transformando os dados.
+		logger.info("Iniciando a coleta e limpeza dos dados!")
+		raw_servers = self._fetch_servers()
+		actives = self._filter_active_servers(raw_servers)
+		no_aliance_countries = self._exclude_alliance_countries(actives)
+		servers = self._agroup_servers_by_country_code(no_aliance_countries)
+
+		return servers
